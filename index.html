@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinguaApp</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Landing Page / Auth Screen -->
+    <section id="auth-screen" class="landing-container">
+        <div class="landing-card">
+            <div class="logo-container text-center">
+                <h1 class="landing-title">LinguaApp</h1>
+                <p class="subtitle" data-i18n="landing_subtitle">Изучайте языки быстро и эффективно</p>
+            </div>
+
+            <div class="lang-selector-landing">
+                <button class="lang-btn active" onclick="setLanguage('rus')">RUS</button>
+                <button class="lang-btn" onclick="setLanguage('uzb')">UZB</button>
+                <button class="lang-btn" onclick="setLanguage('eng')">ENG</button>
+            </div>
+
+            <div class="auth-tabs">
+                <button class="auth-tab-btn active" onclick="toggleAuthTab('login')" data-i18n="tab_login">Вход</button>
+                <button class="auth-tab-btn" onclick="toggleAuthTab('register')"
+                    data-i18n="tab_register">Регистрация</button>
+            </div>
+
+            <form id="auth-form" onsubmit="handleAuth(event)">
+                <div class="form-group">
+                    <label data-i18n="label_email">Email</label>
+                    <input type="email" id="auth-email" class="task-input" required placeholder="example@mail.com">
+                </div>
+                <div class="form-group margin-top">
+                    <label data-i18n="label_password">Пароль</label>
+                    <input type="password" id="auth-password" class="task-input" required placeholder="••••••••">
+                </div>
+
+                <div id="register-fields" class="hidden">
+                    <div class="form-group margin-top">
+                        <label data-i18n="label_name">Имя</label>
+                        <input type="text" id="reg-name" class="task-input" placeholder="Александр">
+                    </div>
+                </div>
+
+                <button type="submit" id="auth-submit-btn" class="btn primary-btn full-width margin-top"
+                    data-i18n="btn_login">Войти</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Main Application UI -->
+    <div id="main-app" class="hidden">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo-container">
+                <h1>LinguaApp</h1>
+            </div>
+
+            <nav class="app-nav">
+                <button class="nav-btn active" onclick="switchTab('learn', event)">
+                    <span>📚</span> <span data-i18n="nav_learn">Учеба</span>
+                </button>
+                <button class="nav-btn" onclick="switchTab('dictionary', event)">
+                    <span>📖</span> <span data-i18n="nav_dict">Словарь</span>
+                </button>
+                <button class="nav-btn" onclick="switchTab('translator', event)">
+                    <span>🌐</span> <span data-i18n="nav_trans">Перевод</span>
+                </button>
+                <button class="nav-btn" onclick="switchTab('profile', event)">
+                    <span>👤</span> <span data-i18n="nav_profile">Профиль</span>
+                </button>
+            </nav>
+
+            <div class="header-actions">
+                <div class="lang-selector">
+                    <button class="lang-btn active" onclick="setLanguage('rus')">RU</button>
+                    <button class="lang-btn" onclick="setLanguage('uzb')">UZ</button>
+                    <button class="lang-btn" onclick="setLanguage('eng')">EN</button>
+                </div>
+                <button id="theme-btn" class="theme-toggle" onclick="toggleTheme()">🌙</button>
+            </div>
+        </header>
+
+        <main class="main-container">
+
+            <!-- 1. УЧЕБА / СПИСОК УРОВНЕЙ -->
+            <section id="learn-screen" class="card-section">
+                <div class="section-header">
+                    <h2 data-i18n="learn_title">Курс обучения</h2>
+                    <p class="subtitle" data-i18n="learn_subtitle">Выберите урок для прохождения</p>
+                </div>
+
+                <div class="accordion-container" id="levels-accordion">
+                    <!-- Заполняется динамически -->
+                </div>
+            </section>
+
+            <!-- 1.1 ЭКРАН ПРОХОЖДЕНИЯ УРОКА -->
+            <section id="lesson-screen" class="card-section hidden">
+                <div class="lesson-header-bar">
+                    <button class="btn secondary-btn sm-btn" onclick="closeLesson()">✕</button>
+                    <div class="progress-bar-container flex-1">
+                        <div id="lesson-progress-fill" class="progress-bar-fill"></div>
+                    </div>
+                </div>
+
+                <div id="task-container" class="margin-top">
+                    <!-- Задание рендерится из JS -->
+                </div>
+
+                <div class="dialogue-actions margin-top">
+                    <button class="btn primary-btn full-width" onclick="submitTask()"
+                        data-i18n="btn_next">Ответить</button>
+                </div>
+            </section>
+
+            <!-- 2. СЛОВАРЬ -->
+            <section id="dictionary-screen" class="card-section hidden">
+                <div class="section-header">
+                    <h2 data-i18n="nav_dict">Мой словарь</h2>
+                    <p class="subtitle" data-i18n="dict_subtitle">Сохраненные слова и карточки</p>
+                </div>
+
+                <div class="search-bar">
+                    <input type="text" placeholder="Поиск..." class="task-input" id="dict-search"
+                        oninput="filterDictionary()">
+                </div>
+
+                <div class="dictionary-grid" id="dict-list">
+                    <!-- Заполняется из JS -->
+                </div>
+            </section>
+
+            <!-- 3. ПЕРЕВОДЧИК -->
+            <section id="translator-screen" class="card-section hidden">
+                <div class="section-header">
+                    <h2 data-i18n="nav_trans">Переводчик</h2>
+                    <p class="subtitle" data-i18n="trans_subtitle">Мгновенный перевод слов и предложений</p>
+                </div>
+
+                <div class="translator-box">
+                    <div class="form-group">
+                        <textarea id="trans-input" class="task-input trans-textarea"
+                            placeholder="Type here..."></textarea>
+                    </div>
+                    <button class="btn primary-btn full-width margin-top" onclick="handleTranslate()"
+                        data-i18n="btn_translate">Перевести</button>
+                    <div class="form-group margin-top">
+                        <div id="trans-output" class="trans-result-box">...</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. ПРОФИЛЬ -->
+            <section id="profile-screen" class="card-section hidden">
+                <div class="profile-header">
+                    <div class="profile-avatar">👤</div>
+                    <h2 id="profile-user-name">Пользователь</h2>
+                    <span class="badge" id="profile-level-badge">Уровень 1</span>
+                </div>
+
+                <div class="result-stats margin-top">
+                    <div class="stat-box">
+                        <span data-i18n="stat_words">Слов</span>
+                        <strong id="stat-words-val">0</strong>
+                    </div>
+                    <div class="stat-box">
+                        <span data-i18n="stat_streak">Дней</span>
+                        <strong>1🔥</strong>
+                    </div>
+                    <div class="stat-box">
+                        <span data-i18n="stat_xp">Очки</span>
+                        <strong id="stat-xp-val">0 XP</strong>
+                    </div>
+                </div>
+
+                <div class="profile-settings margin-top">
+                    <button class="btn secondary-btn full-width margin-top" onclick="logout()"
+                        style="color: var(--danger);" data-i18n="btn_logout">Выйти из аккаунта</button>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
